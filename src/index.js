@@ -23,8 +23,10 @@ module.exports = function check(str, bracketsConfig) {
     else {
       if ((closingBrackets.indexOf(str[i])+1) || sameBrackets.indexOf(str[i]+1)) {
         if (stack.length) {
-          if (openingBrackets.indexOf(stack[stack.length - 1])+1 && str[i] == closingBrackets[closingBrackets.indexOf(stack[stack.length - 1])+1]); 
-          stack.pop();
+          if (((openingBrackets.indexOf(stack[stack.length - 1])+1) || (sameBrackets.indexOf(stack[stack.length - 1])+1)) &&
+              ((str[i] == allBracketPairs[allBracketPairs.indexOf(stack[stack.length - 1])+1]) || (sameBrackets.indexOf(str[i])+1))) { 
+              stack.pop();
+              }
         }
         else {
           return false;
