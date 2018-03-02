@@ -6,8 +6,7 @@ module.exports = function check(str, bracketsConfig) {
   var stack = [];
 
   for (var i = 0; i < bracketsConfig.length; i++) {
-    allBracketPairs = allBracketPairs + bracketsConfig[i][0];
-    allBracketPairs = allBracketPairs + bracketsConfig[i][1];
+    allBracketPairs = allBracketPairs + bracketsConfig[i][0] + bracketsConfig[i][1];
     if (bracketsConfig[i][0] == bracketsConfig[i][1]) {
       sameBrackets = sameBrackets + bracketsConfig[i][0];
     }
@@ -16,21 +15,30 @@ module.exports = function check(str, bracketsConfig) {
       closingBrackets = closingBrackets + bracketsConfig[i][1];
     }
   }
-  for (var i = 0; i < str.length; i++) {
-    if (openingBrackets.indexOf(str[i])+1 || sameBrackets.indexOf(str[i])+1) {
+
+  for (var i = 0, isFirstSameBracketPushed = false; i < str.length; i++) {
+    if (openingBrackets.indexOf(str[i])+1 && !(sameBrackets.indexOf(str[i])+1)) {
       stack.push(str[i]);
+    } 
+    
+    else if (sameBrackets.indexOf(str[i])+1 && !isFirstSameBracketPushed) {
+      stack.push(str[i]);
+      isFirstSameBracketPushed = !isFirstSameBracketPushed;
     }
-    else {
-      if ((closingBrackets.indexOf(str[i])+1) || sameBrackets.indexOf(str[i]+1)) {
-        if (stack.length) {
-          if (((openingBrackets.indexOf(stack[stack.length - 1])+1) || (sameBrackets.indexOf(stack[stack.length - 1])+1)) &&
-              ((str[i] == allBracketPairs[allBracketPairs.indexOf(stack[stack.length - 1])+1]) || (sameBrackets.indexOf(str[i])+1))) { 
-              stack.pop();
-              }
+    
+    else if (closingBrackets.indexOf(str[i])+1 || sameBrackets.indexOf(str[i])+1) {
+      if (stack.length) {
+        if ((str[i] == allBracketPairs[allBracketPairs.indexOf(stack[stack.length - 1])+1]) && closingBrackets.indexOf(str[i])+1) {
+          stack.pop();
         }
-        else {
-          return false;
+
+        if (stack[stack.length - 1] == str[i] && sameBrackets.indexOf(str[i])+1 && isFirstSameBracketPushed) {
+          stack.pop();
+          isFirstSameBracketPushed = !isFirstSameBracketPushed;
         }
+      }
+      else {
+        return false;
       }
     }
   }
